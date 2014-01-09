@@ -33,6 +33,7 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/pic', routes.pic);
+app.get('/thumb', routes.thumb);
 app.get('/browse', routes.browse);
 app.get('/users', user.list);
 

@@ -5,6 +5,9 @@
 
 var fs = require('fs');
 var path = require('path');
+var util = require('util');
+
+var easyimg = require('easyimage');
 
 exports.index = function(req, res) {
   res.render('index', { title: 'Express' });
@@ -15,6 +18,24 @@ exports.pic = function(req, res) {
     console.log(p);
     res.sendfile(p);
 };
+
+exports.thumb = function(req, res) {
+    p = req.param('path');
+    thumbName = p.split(path.sep).join('_');
+    dest = path.join('thumbnails', thumbName);
+
+    if(fs.existsSync(dest) == false) {
+        easyimg.thumbnail(
+                { src: p, dst: dest, width: 128, height: 128, x: 0, y: 0 },
+                function(err, image) {
+                    if (err) throw err;
+                    console.log(util.format('Thumbnail created: (%s)', dest));
+                }
+                );
+    }
+
+    res.sendfile(dest);
+}
 
 exports.browse = function(req, res) {
     p = req.param('path');
@@ -33,7 +54,7 @@ exports.browse = function(req, res) {
         newPath = path.join(p, contents[i]);
         stat = fs.statSync(newPath);
         if(stat.isFile()) {
-            img += '<a href="pic?path='+ encodeURIComponent(newPath) +'"><img src="pic?path='+ encodeURIComponent(newPath) +'"></a>\n';
+            img += '<a href="pic?path='+ encodeURIComponent(newPath) +'"><img src="thumb?path='+ encodeURIComponent(newPath) +'"></a>\n';
             ret += '<a href="pic?path=' + encodeURIComponent(newPath) + '">' + contents[i] +'</a><br />';
         } else {
             ret += '<a href="browse?path=' + encodeURIComponent(newPath) + '">' + contents[i] +'</a><br />';
