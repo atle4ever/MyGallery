@@ -14,15 +14,15 @@ exports.index = function(req, res) {
 };
 
 exports.pic = function(req, res) {
-    p = req.param('path');
+    var p = req.param('path');
     console.log(p);
     res.sendfile(p);
 };
 
 exports.thumb = function(req, res) {
-    p = req.param('path');
-    thumbName = p.split(path.sep).join('_');
-    dest = path.join('thumbnails', thumbName);
+    var p = req.param('path');
+    var thumbName = p.split(path.sep).join('_');
+    var dest = path.join('thumbnails', thumbName);
 
     if(fs.existsSync(dest) == false) {
         easyimg.thumbnail(
@@ -30,29 +30,30 @@ exports.thumb = function(req, res) {
                 function(err, image) {
                     if (err) throw err;
                     console.log(util.format('Thumbnail created: (%s)', dest));
+                    res.sendfile(dest);
                 }
                 );
+    } else {
+        res.sendfile(dest);
     }
-
-    res.sendfile(dest);
 }
 
 exports.browse = function(req, res) {
-    p = req.param('path');
+    var p = req.param('path');
     console.log(p);
     var contents = fs.readdirSync(p);
     console.log(contents);
 
-    ret = '<html><body>' +
+    var ret = '<html><body>' +
         '<script type="text/javascript" src="javascripts/jquery.js"></script>' +
         '<script type="text/javascript" src="javascripts/html5gallery.js"></script>' +
         '</head><body>';
 
-    img = '<div style="display:none;" class="html5gallery" data-skin="horizontal" data-width="480" data-height="272">';
+    var img = '<div style="display:none;" class="html5gallery" data-skin="horizontal" data-width="480" data-height="272">';
     
     for(var i in contents) {
-        newPath = path.join(p, contents[i]);
-        stat = fs.statSync(newPath);
+        var newPath = path.join(p, contents[i]);
+        var stat = fs.statSync(newPath);
         if(stat.isFile()) {
             img += '<a href="pic?path='+ encodeURIComponent(newPath) +'"><img src="thumb?path='+ encodeURIComponent(newPath) +'"></a>\n';
             ret += '<a href="pic?path=' + encodeURIComponent(newPath) + '">' + contents[i] +'</a><br />';
