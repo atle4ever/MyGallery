@@ -25,6 +25,8 @@ exports.thumb = function(req, res) {
     var dest = path.join('thumbnails', thumbName);
 
     if(fs.existsSync(dest) == false) {
+        console.log(p);
+        console.log(dest);
         easyimg.thumbnail(
                 { src: p, dst: dest, width: 128, height: 128, x: 0, y: 0 },
                 function(err, image) {
@@ -67,4 +69,25 @@ exports.browse = function(req, res) {
 
     ret += '</body></html>'
     res.send(ret);
+};
+
+exports.browse2 = function(req, res) {
+    var p = req.param('path');
+    console.log(p);
+    var contents = fs.readdirSync(p);
+    console.log(contents);
+
+    var links = new Array(); 
+    var images = new Array();
+
+    for(var i in contents) {
+        var newPath = path.join(p, contents[i]);
+        var stat = fs.statSync(newPath);
+        if(stat.isFile()) {
+            images.push(['thumb?path='+encodeURIComponent(newPath), 'pic?path=' + encodeURIComponent(newPath)]);
+        } else {
+            links.push([contents[i], 'browse2?path=' + encodeURIComponent(newPath)]);
+        }
+    }
+    res.render('browse', { links: links, images: images});
 };

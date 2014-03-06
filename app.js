@@ -35,6 +35,7 @@ app.get('/', routes.index);
 app.get('/pic', routes.pic);
 app.get('/thumb', routes.thumb);
 app.get('/browse', routes.browse);
+app.get('/browse2', routes.browse2);
 app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){
